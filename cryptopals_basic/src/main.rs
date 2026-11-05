@@ -1,5 +1,6 @@
 use cryptopals_basic::hex_to_base64::hex_to_base64;
 use cryptopals_basic::hex_xor::{_xor_hex, xor_hex};
+use cryptopals_basic::single_byte_xor_cipher::decrypt_byte_xor_cipher;
 
 fn exmpl_hex_to_base64()
 {
@@ -28,12 +29,10 @@ fn exmpl_hex_xor()
 
     let res = xor_hex(hex1, hex2).unwrap();
 
-    let res_str = hex::encode(res);
-
-    println!("res: {}", res_str);
+    println!("res: {}", res);
     println!("expected: {}", expected);
 
-    if res_str == expected
+    if res == expected
     {
         println!("SUCCESS");
     }
@@ -43,7 +42,15 @@ fn exmpl_hex_xor()
     }
 }
 
+fn exmpl_decrypt_xor_byte_cipher()
+{
+    let input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+
+    decrypt_byte_xor_cipher(input);
+}
+
 fn main()
 {
-    exmpl_hex_xor();
+    // exmpl_hex_xor();
+    exmpl_decrypt_xor_byte_cipher();
 }

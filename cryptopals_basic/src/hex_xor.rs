@@ -1,11 +1,11 @@
 use hex;
 
-pub fn xor_hex(hex_1: &str, hex_2: &str) -> Result<Vec<u8>, String>
+pub fn xor_hex(hex_1: &str, hex_2: &str) -> Result<String, String>
 {
     let raw_hex1 = hex::decode(hex_1).unwrap();
     let raw_hex2 = hex::decode(hex_2).unwrap();
 
-    return _xor_hex(&raw_hex1, &raw_hex2);
+    return Ok(hex::encode(_xor_hex(&raw_hex1, &raw_hex2).unwrap()));
 }
 
 pub fn _xor_hex(bytes_1: &[u8], bytes_2: &[u8]) -> Result<Vec<u8>, String>
