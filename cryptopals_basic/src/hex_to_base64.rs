@@ -19,7 +19,7 @@ fn u8_to_base64(val: u8) -> String
 //  - 52-61 to digits, 
 //  - 62 to + 
 //  - 63 to / (or - and _ in urls) 
-pub fn hex_to_base64(hex_input: &str) 
+pub fn hex_to_base64(hex_input: &str) -> Result<String, String>
 {
     let mut base64_val: Vec<String> = Vec::with_capacity(hex_input.len() / 2);
     let mut bits_in_carry: u8 = 0;
@@ -59,7 +59,7 @@ pub fn hex_to_base64(hex_input: &str)
         else if bits_in_carry == 4
         {
             carry = carry << 2;
-            let mut hh = hh_mask(2);
+            let mut hh = hh_mask(2) & byte;
             hh = hh >> 6;
 
             val = carry | hh;
@@ -76,14 +76,40 @@ pub fn hex_to_base64(hex_input: &str)
         }
         else
         {
-            panic!("hex_to_base64:: bits_in_carry should never have: {}", bits_in_carry);
+            return Err(format!("hex_to_base64:: bits_in_carry should never have: {}", bits_in_carry));
         }
 
         base64_val.push(u8_to_base64(val));
         i += 1;
     }
 
-    println!("base64: {}", base64_val.concat())
+    match bits_in_carry {
+        0 => {}
+
+        2 => {
+            // Two remaining bits become the high two bits of a Base64 value.
+            base64_val.push(u8_to_base64(carry << 4));
+            base64_val.push("=".to_string());
+            base64_val.push("=".to_string());
+        }
+
+        4 => {
+            // Four remaining bits become the high four bits of a Base64 value.
+            base64_val.push(u8_to_base64(carry << 2));
+            base64_val.push("=".to_string());
+        }
+
+        6 => {
+            // This should normally be consumed by the next loop iteration.
+            return Err(format!("unexpected six bits remaining"));
+        }
+
+        _ => {
+            return Err(format!("invalid bits_in_carry: {}", bits_in_carry));
+        }
+    }
+
+    return Ok(base64_val.concat())
 }
 
 
